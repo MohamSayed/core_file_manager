@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 // packages
 import 'package:provider/provider.dart';
 
-// local files
+// app files
 import 'package:basic_file_manager/screens/about.dart';
 import 'package:basic_file_manager/screens/settings.dart';
 import 'package:basic_file_manager/notifiers/core.dart';

@@ -1,12 +1,16 @@
 // dart
 import 'dart:io';
+
 // framework
-import 'package:basic_file_manager/screens/folder_list_screen.dart';
-import 'package:basic_file_manager/widgets/appbar_popup_menu.dart';
 import 'package:flutter/material.dart';
 
 // packages
 import 'package:path_provider/path_provider.dart';
+
+// app
+import 'package:basic_file_manager/helpers/storage_utils.dart';
+import 'package:basic_file_manager/screens/folder_list_screen.dart';
+import 'package:basic_file_manager/widgets/appbar_popup_menu.dart';
 
 class StorageScreen extends StatefulWidget {
   @override
@@ -21,9 +25,9 @@ class _StorageScreenState extends State<StorageScreen> {
         AppBarPopupMenu()
       ]),
 
-      body: FutureBuilder<List<Directory>>(
-         future: getExternalStorageDirectories(), // a previously-obtained Future<String> or null
-         builder: (BuildContext context, AsyncSnapshot<List<Directory>> snapshot) {
+      body: FutureBuilder<List>(
+         future: getStorageList(), // a previously-obtained Future<String> or null
+         builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
            switch (snapshot.connectionState) {
              case ConnectionState.none:
                return Text('Press button to start.');

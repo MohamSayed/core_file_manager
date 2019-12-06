@@ -4,11 +4,11 @@ import 'dart:io';
 // framework
 import 'package:flutter/material.dart';
 
-// local files
+// app files
 import 'package:basic_file_manager/notifiers/core.dart';
 import 'package:basic_file_manager/screens/folder_list_screen.dart';
 import 'package:basic_file_manager/notifiers/preferences.dart';
-import 'package:basic_file_manager/widgets/storage_screen.dart';
+import 'package:basic_file_manager/screens/storage_screen.dart';
 
 // packages
 import 'package:provider/provider.dart';

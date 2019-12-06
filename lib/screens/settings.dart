@@ -4,7 +4,7 @@ import 'package:dynamic_theme/theme_switcher_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-// local
+// app
 import 'package:basic_file_manager/notifiers/preferences.dart';
 
 class Settings extends StatefulWidget {

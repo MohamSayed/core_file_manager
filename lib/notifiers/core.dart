@@ -10,9 +10,9 @@ import 'package:path/path.dart' as p;
 import 'package:rxdart/rxdart.dart';
 import 'package:path_provider/path_provider.dart';
 
-// local files
+// app files
 import 'package:basic_file_manager/notifiers/preferences.dart';
-import 'package:basic_file_manager/utils.dart' as utils;
+import 'package:basic_file_manager/helpers/array_utils.dart' as utils;
 import 'package:basic_file_manager/models/file.dart';
 import 'package:basic_file_manager/models/folder.dart';
 import 'package:simple_permissions/simple_permissions.dart';
@@ -77,7 +77,7 @@ class CoreNotifier extends ChangeNotifier {
         print("Core: excluding hidden");
         _files.removeWhere((test) {
           bool _isHidden = test.name.startsWith('.') == true;
-          print("\sfiltering: " + test.name + "\n\s\sidden: $_isHidden");
+          print("filtering: " + test.name + "\nhidden: $_isHidden");
           return test.name.startsWith('.') == true;
         });
       }

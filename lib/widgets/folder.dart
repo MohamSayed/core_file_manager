@@ -1,7 +1,7 @@
 // framework
 import 'package:flutter/material.dart';
 
-// local
+// app
 import 'package:basic_file_manager/screens/folder_list_screen.dart';
 import 'package:basic_file_manager/widgets/context_dialog.dart';
 

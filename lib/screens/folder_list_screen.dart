@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:provider/provider.dart';
 
-// local files
+// app files
 import 'package:basic_file_manager/notifiers/core.dart';
 import 'package:basic_file_manager/widgets/appbar_popup_menu.dart';
 import 'package:basic_file_manager/widgets/search.dart';

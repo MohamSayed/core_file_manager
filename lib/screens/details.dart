@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 // packages
 import 'package:flutter_file_manager/flutter_file_manager.dart';
 
-// local files
+// app files
 class DetailScreen extends StatelessWidget {
   final String path;
   const DetailScreen({@required this.path});
