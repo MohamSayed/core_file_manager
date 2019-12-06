@@ -16,6 +16,7 @@ class AppBarPopupMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("AppBarPopupMenu(path): $path");
     return Consumer<CoreNotifier>(
       builder: (context, model, child) => PopupMenuButton<String>(
           onSelected: (value) {

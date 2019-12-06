@@ -77,7 +77,6 @@ class CoreNotifier extends ChangeNotifier {
         print("Core: excluding hidden");
         _files.removeWhere((test) {
           bool _isHidden = test.name.startsWith('.') == true;
-          print("filtering: " + test.name + "\nhidden: $_isHidden");
           return test.name.startsWith('.') == true;
         });
       }
@@ -161,6 +160,12 @@ class CoreNotifier extends ChangeNotifier {
 
   void copyByPath(List<String> objects) {
     copyList.addAll(objects);
+    _pasteMode.add(true);
+  }
+
+    void copyFile(String path) {
+      print("core->copyFile(copy): $path");
+    copyList.add(path);
     _pasteMode.add(true);
   }
 

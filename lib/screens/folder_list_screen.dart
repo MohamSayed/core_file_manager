@@ -95,11 +95,11 @@ class _FolderListScreenState extends State<FolderListScreen> with AutomaticKeepA
                             } else if (snapshot.data[index] is MyFile) {
                               return FileWidget(
                                 name: snapshot.data[index].name,
-//                                onTap: () {
-//                                  _printFuture(
-//                                      OpenFile.open(snapshot.data[index].path));
-//                                }
-//                                ,
+                               onTap: () {
+                                 _printFuture(
+                                     OpenFile.open(snapshot.data[index].path));
+                               }
+                               ,
                                 onLongPress: () {
                                   showDialog(
                                       context: context,

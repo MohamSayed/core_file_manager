@@ -1,9 +1,12 @@
 // framework
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 // package
 import 'package:provider/provider.dart';
 import 'package:open_file/open_file.dart';
+import 'package:esys_flutter_share/esys_flutter_share.dart';
 
 // app
 import 'package:basic_file_manager/notifiers/core.dart';
@@ -87,7 +90,7 @@ class FileContextDialog extends StatelessWidget {
                   // open option
                   SimpleDialogOption(
                     onPressed: () async {
-                    //  OpenFile.open(path);
+                      OpenFile.open(path);
                       Navigator.pop(context);
                     },
                     child: ListTile(
@@ -98,7 +101,7 @@ class FileContextDialog extends StatelessWidget {
                   SimpleDialogOption(
                       onPressed: () {
                         Navigator.pop(context);
-                        model.copyByPath([path]);
+                        model.copyFile(path);
                       },
                       child: ListTile(
                           leading: Icon(Icons.content_copy),
@@ -111,8 +114,11 @@ class FileContextDialog extends StatelessWidget {
                       },
                       child: ListTile(
                           leading: Icon(Icons.delete), title: Text('Delete'))),
+
+                  // Share option
                   SimpleDialogOption(
                     onPressed: () async {
+                      await Share.file("Sharing this file", "file"  , File(path).readAsBytesSync(), '*/*');
                       Navigator.pop(context);
                     },
                     child: ListTile(
