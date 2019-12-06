@@ -20,9 +20,9 @@ import 'package:path_provider/path_provider.dart';
 main() {
   runApp(MultiProvider(
     providers: [
-      ValueListenableProvider(builder: (context) => ValueNotifier(true)),
-      ChangeNotifierProvider(builder: (context) => CoreNotifier()),
-      ChangeNotifierProvider(builder: (context) => PreferencesNotifier()),
+      ValueListenableProvider(create: (context) => ValueNotifier(true)),
+      ChangeNotifierProvider(create: (context) => CoreNotifier()),
+      ChangeNotifierProvider(create: (context) => PreferencesNotifier()),
     ],
     child: MyApp(),
   ));
