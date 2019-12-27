@@ -21,7 +21,7 @@ class FolderWidget extends StatelessWidget {
       onTap: () {
         // Navigator.push(context,
         //     MaterialPageRoute(builder: (context) => FolderListScreen(path: path)));
-        coreNotifier.navigateToDirectoru(path);
+        coreNotifier.navigateToDirectory(path);
       },
       onLongPress: () {
         showDialog(

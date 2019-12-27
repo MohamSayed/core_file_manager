@@ -43,19 +43,18 @@ Future<Directory> getExternalStorageWithoutDataDir(
   }
 }
 
+/// keepHidden: show files that start with .
 Future<List<dynamic>> getFoldersAndFiles(String path,
     {changeCurrentPath: true,
     Sorting sortedBy: Sorting.Type,
     reverse: false,
     recursive: false,
-    showHidden: false}) async {
+    keepHidden: false}) async {
   Directory _path = Directory(path);
-
-  int start = DateTime.now().millisecondsSinceEpoch;
-
   List<dynamic> _files;
   try {
-    _files = (await _path.list(recursive: recursive).toList()).map((path) {
+    _files = await _path.list(recursive: recursive).toList();
+    _files = _files.map((path) {
       if (FileSystemEntity.isDirectorySync(path.path))
         return MyFolder(
             name: p.split(path.absolute.path).last,
@@ -69,18 +68,16 @@ Future<List<dynamic>> getFoldersAndFiles(String path,
     }).toList();
 
     // Removing hidden files & folders from the list
-    if (!showHidden) {
+    if (!keepHidden) {
       print("Core: excluding hidden");
       _files.removeWhere((test) {
         return test.name.startsWith('.') == true;
       });
     }
-  } catch (e) {
-    // throw CoreNotifierError(e.toString());
+  } on FileSystemException catch (e) {
+    print(e);
+    return [];
   }
-
-  int end = DateTime.now().millisecondsSinceEpoch;
-  print("[Core] Elapsed time : ${end - start} ms");
   return utils.sort(_files, sortedBy, reverse: reverse);
 }
 
@@ -95,7 +92,7 @@ Future<List<dynamic>> search(dynamic path, String query,
   int start = DateTime.now().millisecondsSinceEpoch;
 
   List<dynamic> files =
-      await getFoldersAndFiles(path, recursive: recursive, showHidden: hidden)
+      await getFoldersAndFiles(path, recursive: recursive, keepHidden: hidden)
         ..retainWhere(
             (test) => test.name.toLowerCase().contains(query.toLowerCase()));
 
@@ -110,20 +107,19 @@ Future<int> getFreeSpace(String path) async {
   return freeSpace;
 }
 
-
-  /// Create folder by path
-  /// * i.e: `.createFolderByPath("/storage/emulated/0/", "folder name" )`
-  Future<Directory> createFolderByPath(String path, String folderName) async {
-    print("filesystem_utils->createFolderByPath: $folderName @ $path");
-    var _directory = Directory(p.join(path, folderName));
-    try {
-      if (!_directory.existsSync()) {
-        _directory.create();
-      } else {
-        FileSystemException("File already exists");
-      }
-      return _directory;
-    } catch (e) {
-      throw FileSystemException(e);
+/// Create folder by path
+/// * i.e: `.createFolderByPath("/storage/emulated/0/", "folder name" )`
+Future<Directory> createFolderByPath(String path, String folderName) async {
+  print("filesystem_utils->createFolderByPath: $folderName @ $path");
+  var _directory = Directory(p.join(path, folderName));
+  try {
+    if (!_directory.existsSync()) {
+      _directory.create();
+    } else {
+      FileSystemException("File already exists");
     }
+    return _directory;
+  } catch (e) {
+    throw FileSystemException(e);
   }
+}

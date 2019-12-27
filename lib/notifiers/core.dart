@@ -31,12 +31,18 @@ class CoreNotifier extends ChangeNotifier {
     _currentPath = currentPath;
   }
 
-  void navigateToDirectoru(String newPath) {
+  Future<void> navigateToDirectory(String newPath) async {
     currentPath = Directory(newPath);
     notifyListeners();
   }
-  Future<String> getRootPath() async {
-    return (await getExternalStorageDirectory()).absolute.path;
+
+  Future<void> navigateBackdward() async {
+    if (_currentPath.absolute.path == p.separator) {
+      
+    } else {
+      _currentPath = currentPath.parent;
+    }
+    notifyListeners();
   }
 
   List<dynamic> folders = [];
@@ -68,18 +74,13 @@ class CoreNotifier extends ChangeNotifier {
             .delete(recursive: true)
             .then((_) => notifyListeners());
       } else if (FileSystemEntity.isFileSync(path)) {
-        print("Deleting link @ $path");
+        print("CoreNotifier->delete: $path");
         await Link(path).delete(recursive: true).then((_) => notifyListeners());
       }
       notifyListeners();
     } catch (e) {
       CoreNotifierError(e.toString());
     }
-  }
-
-
-  Future<void> refresh() async {
-    notifyListeners();
   }
 
   BehaviorSubject<bool> _pasteMode = BehaviorSubject.seeded(false);
@@ -116,7 +117,7 @@ class CoreNotifier extends ChangeNotifier {
     _pasteMode.add(false);
   }
 
-  void reload(){
+  void reload() {
     notifyListeners();
   }
 }

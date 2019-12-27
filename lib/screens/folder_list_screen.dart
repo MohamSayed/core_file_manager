@@ -1,9 +1,11 @@
 // framework
+import 'package:basic_file_manager/screens/storage_screen.dart';
 import 'package:flutter/material.dart';
 
 // packages
 import 'package:open_file/open_file.dart';
 import 'package:provider/provider.dart';
+import 'package:path/path.dart' as pathlib;
 
 // app files
 import 'package:basic_file_manager/notifiers/core.dart';
@@ -18,16 +20,17 @@ import 'package:basic_file_manager/widgets/folder.dart';
 import 'package:basic_file_manager/helpers/filesystem_utils.dart' as filesystem;
 import 'package:basic_file_manager/widgets/context_dialog.dart';
 
-
 class FolderListScreen extends StatefulWidget {
   final String path;
   final bool home;
-  const FolderListScreen({@required this.path, this.home: false}) : assert(path != null);
+  const FolderListScreen({@required this.path, this.home: false})
+      : assert(path != null);
   @override
   _FolderListScreenState createState() => _FolderListScreenState();
 }
 
-class _FolderListScreenState extends State<FolderListScreen> with AutomaticKeepAliveClientMixin {
+class _FolderListScreenState extends State<FolderListScreen>
+    with AutomaticKeepAliveClientMixin {
   ScrollController _scrollController;
   @override
   void initState() {
@@ -48,14 +51,36 @@ class _FolderListScreenState extends State<FolderListScreen> with AutomaticKeepA
     var coreNotifier = Provider.of<CoreNotifier>(context);
 
     return Scaffold(
-        appBar: AppBar(title: Text(coreNotifier.currentPath.absolute.path), actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () => showSearch(
-                context: context, delegate: Search(path: widget.path)),
-          ),
-          AppBarPopupMenu(path: widget.path)
-        ]),
+        appBar: AppBar(
+            title: Text(
+              coreNotifier.currentPath.absolute.path,
+              style: TextStyle(fontSize: 14.0),
+              maxLines: 3,
+            ),
+            leading: BackButton(onPressed: () {
+              if (coreNotifier.currentPath.absolute.path == pathlib.separator) {
+                Navigator.popUntil(
+                    context, ModalRoute.withName(Navigator.defaultRouteName));
+              } else {
+                coreNotifier.navigateBackdward();
+              }
+            }),
+            actions: <Widget>[
+              IconButton(
+                // Go home
+                onPressed: () {
+                  Navigator.popUntil(
+                      context, ModalRoute.withName(Navigator.defaultRouteName));
+                },
+                icon: Icon(Icons.home),
+              ),
+              IconButton(
+                icon: Icon(Icons.search),
+                onPressed: () => showSearch(
+                    context: context, delegate: Search(path: widget.path)),
+              ),
+              AppBarPopupMenu(path: widget.path)
+            ]),
         body: RefreshIndicator(
           onRefresh: () {
             return Future.delayed(Duration(milliseconds: 100))
@@ -64,8 +89,9 @@ class _FolderListScreenState extends State<FolderListScreen> with AutomaticKeepA
           child: Consumer<CoreNotifier>(
             builder: (context, model, child) => FutureBuilder<List<dynamic>>(
               // This function Invoked every time user go back to the previous directory
-              future: filesystem.getFoldersAndFiles(model.currentPath.absolute.path,
-                  showHidden: preferences.hidden),
+              future: filesystem.getFoldersAndFiles(
+                  model.currentPath.absolute.path,
+                  keepHidden: preferences.hidden),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.none:
@@ -98,11 +124,10 @@ class _FolderListScreenState extends State<FolderListScreen> with AutomaticKeepA
                             } else if (snapshot.data[index] is MyFile) {
                               return FileWidget(
                                 name: snapshot.data[index].name,
-                               onTap: () {
-                                 _printFuture(
-                                     OpenFile.open(snapshot.data[index].path));
-                               }
-                               ,
+                                onTap: () {
+                                  _printFuture(
+                                      OpenFile.open(snapshot.data[index].path));
+                                },
                                 onLongPress: () {
                                   showDialog(
                                       context: context,
@@ -136,15 +161,14 @@ class _FolderListScreenState extends State<FolderListScreen> with AutomaticKeepA
               case ConnectionState.none:
                 return Text('Select	lot');
               case ConnectionState.waiting:
-                return Text('Awaiting	bids...');
+                return CircularProgressIndicator();
               case ConnectionState.active:
                 return FolderFloatingActionButton(
                   enabled: snapshot.data,
                   path: widget.path,
                 );
               case ConnectionState.done:
-                FolderFloatingActionButton(
-                    enabled: snapshot.data);
+                FolderFloatingActionButton(enabled: snapshot.data);
             }
             return null;
           },
@@ -153,7 +177,6 @@ class _FolderListScreenState extends State<FolderListScreen> with AutomaticKeepA
 
   @override
   bool get wantKeepAlive => true;
-
 }
 
 _printFuture(Future<String> open) async {
@@ -163,7 +186,7 @@ _printFuture(Future<String> open) async {
 class FolderFloatingActionButton extends StatelessWidget {
   final bool enabled;
   final String path;
-  const FolderFloatingActionButton({Key key, this.enabled, @required this.path})
+  const FolderFloatingActionButton({Key key, this.enabled, this.path})
       : super(key: key);
 
   @override
@@ -175,8 +198,7 @@ class FolderFloatingActionButton extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(16.0))),
         child: Icon(Icons.add),
         onPressed: () => showDialog(
-            context: context,
-            builder: (context) => CreateFolderDialog()),
+            context: context, builder: (context) => CreateFolderDialog()),
       );
     } else
       return Container(

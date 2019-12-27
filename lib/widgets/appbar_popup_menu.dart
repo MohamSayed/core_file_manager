@@ -21,7 +21,7 @@ class AppBarPopupMenu extends StatelessWidget {
       builder: (context, model, child) => PopupMenuButton<String>(
           onSelected: (value) {
             if (value == "refresh") {
-              model.refresh();
+              model.reload();
             } else if (value == "folder") {
               showDialog(
                   context: context,
