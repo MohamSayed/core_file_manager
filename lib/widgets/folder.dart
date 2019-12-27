@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 // app
 import 'package:basic_file_manager/screens/folder_list_screen.dart';
 import 'package:basic_file_manager/widgets/context_dialog.dart';
+import 'package:basic_file_manager/notifiers/core.dart';
+import 'package:provider/provider.dart';
 
 class FolderWidget extends StatelessWidget {
   final String path;
@@ -12,12 +14,14 @@ class FolderWidget extends StatelessWidget {
   const FolderWidget({@required this.path, @required this.name});
   @override
   Widget build(BuildContext context) {
+    var coreNotifier = Provider.of<CoreNotifier>(context, listen: false);
     return Container(
         child: InkWell(
       borderRadius: BorderRadius.circular(10.0),
       onTap: () {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => FolderListScreen(path: path)));
+        // Navigator.push(context,
+        //     MaterialPageRoute(builder: (context) => FolderListScreen(path: path)));
+        coreNotifier.navigateToDirectoru(path);
       },
       onLongPress: () {
         showDialog(

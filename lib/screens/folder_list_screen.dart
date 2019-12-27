@@ -1,5 +1,4 @@
 // framework
-import 'package:basic_file_manager/widgets/context_dialog.dart';
 import 'package:flutter/material.dart';
 
 // packages
@@ -16,6 +15,9 @@ import 'package:basic_file_manager/widgets/file.dart';
 import 'package:basic_file_manager/models/file.dart';
 import 'package:basic_file_manager/models/folder.dart';
 import 'package:basic_file_manager/widgets/folder.dart';
+import 'package:basic_file_manager/helpers/filesystem_utils.dart' as filesystem;
+import 'package:basic_file_manager/widgets/context_dialog.dart';
+
 
 class FolderListScreen extends StatefulWidget {
   final String path;
@@ -43,9 +45,10 @@ class _FolderListScreenState extends State<FolderListScreen> with AutomaticKeepA
   Widget build(BuildContext context) {
     super.build(context);
     final preferences = Provider.of<PreferencesNotifier>(context);
-    print("Folders: ${widget.path}");
+    var coreNotifier = Provider.of<CoreNotifier>(context);
+
     return Scaffold(
-        appBar: AppBar(title: _checkHome(), actions: <Widget>[
+        appBar: AppBar(title: Text(coreNotifier.currentPath.absolute.path), actions: <Widget>[
           IconButton(
             icon: Icon(Icons.search),
             onPressed: () => showSearch(
@@ -61,7 +64,7 @@ class _FolderListScreenState extends State<FolderListScreen> with AutomaticKeepA
           child: Consumer<CoreNotifier>(
             builder: (context, model, child) => FutureBuilder<List<dynamic>>(
               // This function Invoked every time user go back to the previous directory
-              future: model.getFoldersAndFiles(widget.path,
+              future: filesystem.getFoldersAndFiles(model.currentPath.absolute.path,
                   showHidden: preferences.hidden),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 switch (snapshot.connectionState) {
@@ -141,7 +144,7 @@ class _FolderListScreenState extends State<FolderListScreen> with AutomaticKeepA
                 );
               case ConnectionState.done:
                 FolderFloatingActionButton(
-                    enabled: snapshot.data, path: widget.path);
+                    enabled: snapshot.data);
             }
             return null;
           },
@@ -151,29 +154,6 @@ class _FolderListScreenState extends State<FolderListScreen> with AutomaticKeepA
   @override
   bool get wantKeepAlive => true;
 
-  // Checking if the current folder is the home directory
-  Widget _checkHome() {
-    if (widget.home == true)
-      return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              "Basic File Manager",
-              style: const TextStyle(fontSize: 17.0),
-            ),
-            Text(
-              "Internal Storage",
-              style: const TextStyle(fontSize: 13.0),
-            )
-          ]);
-    else
-      return Text(
-        widget.path,
-        style: const TextStyle(fontSize: 13.0),
-        maxLines: 2,
-      );
-  }
 }
 
 _printFuture(Future<String> open) async {
@@ -196,9 +176,7 @@ class FolderFloatingActionButton extends StatelessWidget {
         child: Icon(Icons.add),
         onPressed: () => showDialog(
             context: context,
-            builder: (context) => CreateFolderDialog(
-                  path: path,
-                )),
+            builder: (context) => CreateFolderDialog()),
       );
     } else
       return Container(

@@ -1,14 +1,19 @@
+// framework
 import 'package:flutter/material.dart';
+
+// packages & plugins
 import 'package:provider/provider.dart';
-import 'package:basic_file_manager/notifiers/core.dart';
 import 'package:toast/toast.dart';
 
+// app
+import 'package:basic_file_manager/helpers/filesystem_utils.dart' as filesystem;
+import 'package:basic_file_manager/notifiers/core.dart';
 
 class CreateFolderDialog extends StatefulWidget {
   final String path;
 
   /// Show a dialog that accept allowed linux name
-  const CreateFolderDialog({@required this.path});
+  const CreateFolderDialog({this.path});
   @override
   _CreateFileDialogState createState() => _CreateFileDialogState();
 }
@@ -46,10 +51,10 @@ class _CreateFileDialogState extends State<CreateFolderDialog> {
                         Flexible(
                             child: TextField(
                           controller: _textEditingController,
-                          onChanged: (data) {
+                          onChanged: (name) {
                             // Not allowed characters for album name, since we are creating real
                             // folder on linux
-                            if (data.contains("/")) {
+                            if (name.contains("/")) {
                               if (_allowedFolderName == true) {
                                 setState(() {
                                   _allowedFolderName = false;
@@ -57,7 +62,7 @@ class _CreateFileDialogState extends State<CreateFolderDialog> {
                               }
                             } else {
                               // creating a hidden folder helper text
-                              if (data.startsWith('.')) {
+                              if (name.startsWith('.')) {
                                 if (_hidden == false) {
                                   setState(() {
                                     _hidden = true;
@@ -111,10 +116,10 @@ class _CreateFileDialogState extends State<CreateFolderDialog> {
                           onPressed: _allowedFolderName
                               ? () async {
                                   var _directory =
-                                      await model.createFolderByPath(
-                                          widget.path,
+                                      await filesystem.createFolderByPath(
+                                          model.currentPath.absolute.path,
                                           _textEditingController?.text);
-
+                                  model.reload();
                                   if (_directory != null) {
                                     // leaving dialog
                                     Navigator.of(context).pop();

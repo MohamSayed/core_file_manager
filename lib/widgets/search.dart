@@ -9,6 +9,7 @@ import 'package:basic_file_manager/notifiers/core.dart';
 import 'package:basic_file_manager/screens/folder_list_screen.dart';
 import 'package:basic_file_manager/models/file.dart';
 import 'package:basic_file_manager/models/folder.dart';
+import 'package:basic_file_manager/helpers/filesystem_utils.dart' as filesystem;
 
 class Search extends SearchDelegate<String> {
   final String path;
@@ -37,7 +38,7 @@ class Search extends SearchDelegate<String> {
   Widget buildResults(BuildContext context) {
     return Consumer<CoreNotifier>(
         builder: (context, model, child) => FutureBuilder(
-              future: model.search(path, query,
+              future: filesystem.search(path, query,
                   recursive: true), //	a	Stream<int>	or	null
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasError) return Text('Error:	${snapshot.error}');
@@ -68,7 +69,7 @@ class Search extends SearchDelegate<String> {
   Widget buildSuggestions(BuildContext context) {
     return Consumer<CoreNotifier>(
         builder: (context, model, child) => FutureBuilder(
-              future: model.search(path, query,
+              future: filesystem.search(path, query,
                   recursive: true), //	a	Stream<int>	or	null
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasError) return Text('Error:	${snapshot.error}');
