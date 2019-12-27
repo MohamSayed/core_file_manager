@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:basic_file_manager/screens/about.dart';
 import 'package:basic_file_manager/screens/settings.dart';
 import 'package:basic_file_manager/notifiers/core.dart';
-import 'package:basic_file_manager/widgets/create_dialog.dart';
+import 'package:basic_file_manager/ui/widgets/create_dialog.dart';
 
 class AppBarPopupMenu extends StatelessWidget {
   final String path;

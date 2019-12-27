@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 // app
 import 'package:basic_file_manager/screens/folder_list_screen.dart';
-import 'package:basic_file_manager/widgets/context_dialog.dart';
+import 'package:basic_file_manager/ui/widgets/context_dialog.dart';
 import 'package:basic_file_manager/notifiers/core.dart';
 import 'package:provider/provider.dart';
 
