@@ -6,7 +6,7 @@ import 'package:basic_file_manager/models/file.dart';
 import 'package:basic_file_manager/models/folder.dart';
 import 'package:basic_file_manager/notifiers/preferences.dart';
 import 'package:flutter/services.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as pathlib;
 import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -33,7 +33,8 @@ Future<Directory> getExternalStorageWithoutDataDir(
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
   print("storage_helper->getExternalStorageWithoutDataDir: " +
       packageInfo.packageName);
-  String subPath = p.join("Android", "data", packageInfo.packageName, "files");
+  String subPath =
+      pathlib.join("Android", "data", packageInfo.packageName, "files");
   if (unfilteredPath.contains(subPath)) {
     String filteredPath = unfilteredPath.split(subPath).first;
     print("storage_helper->getExternalStorageWithoutDataDir: " + filteredPath);
@@ -57,12 +58,12 @@ Future<List<dynamic>> getFoldersAndFiles(String path,
     _files = _files.map((path) {
       if (FileSystemEntity.isDirectorySync(path.path))
         return MyFolder(
-            name: p.split(path.absolute.path).last,
+            name: pathlib.split(path.absolute.path).last,
             path: path.absolute.path,
             type: "Directory");
       else
         return MyFile(
-            name: p.split(path.absolute.path).last,
+            name: pathlib.split(path.absolute.path).last,
             path: path.absolute.path,
             type: "File");
     }).toList();
@@ -111,7 +112,7 @@ Future<int> getFreeSpace(String path) async {
 /// * i.e: `.createFolderByPath("/storage/emulated/0/", "folder name" )`
 Future<Directory> createFolderByPath(String path, String folderName) async {
   print("filesystem_utils->createFolderByPath: $folderName @ $path");
-  var _directory = Directory(p.join(path, folderName));
+  var _directory = Directory(pathlib.join(path, folderName));
   try {
     if (!_directory.existsSync()) {
       _directory.create();
@@ -122,4 +123,16 @@ Future<Directory> createFolderByPath(String path, String folderName) async {
   } catch (e) {
     throw FileSystemException(e);
   }
+}
+
+/// This function returns every [Directory] in th path
+List<Directory> splitPathToDirectories(String path) {
+  List<Directory> splittedPath = List();
+  Directory pathDir = Directory(path);
+  splittedPath.add(pathDir);
+  for (var item in pathlib.split(path)) {
+    splittedPath.add(pathDir.parent);
+    pathDir = pathDir.parent;
+  }
+  return splittedPath.reversed.toList();
 }

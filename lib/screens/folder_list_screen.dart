@@ -1,5 +1,6 @@
 // framework
 import 'package:basic_file_manager/screens/storage_screen.dart';
+import 'package:basic_file_manager/ui/widgets/appbar_path_widget.dart';
 import 'package:flutter/material.dart';
 
 // packages
@@ -49,105 +50,118 @@ class _FolderListScreenState extends State<FolderListScreen>
     super.build(context);
     final preferences = Provider.of<PreferencesNotifier>(context);
     var coreNotifier = Provider.of<CoreNotifier>(context);
-
     return Scaffold(
-        appBar: AppBar(
-            title: Text(
-              coreNotifier.currentPath.absolute.path,
-              style: TextStyle(fontSize: 14.0),
-              maxLines: 3,
-            ),
-            leading: BackButton(onPressed: () {
-              if (coreNotifier.currentPath.absolute.path == pathlib.separator) {
-                Navigator.popUntil(
-                    context, ModalRoute.withName(Navigator.defaultRouteName));
-              } else {
-                coreNotifier.navigateBackdward();
-              }
-            }),
-            actions: <Widget>[
-              IconButton(
-                // Go home
-                onPressed: () {
-                  Navigator.popUntil(
-                      context, ModalRoute.withName(Navigator.defaultRouteName));
-                },
-                icon: Icon(Icons.home),
-              ),
-              IconButton(
-                icon: Icon(Icons.search),
-                onPressed: () => showSearch(
-                    context: context, delegate: Search(path: widget.path)),
-              ),
-              AppBarPopupMenu(path: widget.path)
-            ]),
         body: RefreshIndicator(
           onRefresh: () {
             return Future.delayed(Duration(milliseconds: 100))
                 .then((_) => setState(() {}));
           },
-          child: Consumer<CoreNotifier>(
-            builder: (context, model, child) => FutureBuilder<List<dynamic>>(
-              // This function Invoked every time user go back to the previous directory
-              future: filesystem.getFoldersAndFiles(
-                  model.currentPath.absolute.path,
-                  keepHidden: preferences.hidden),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.none:
-                    return Text('Press button to start.');
-                  case ConnectionState.active:
-                  case ConnectionState.waiting:
-                    return Center(child: CircularProgressIndicator());
-                  case ConnectionState.done:
-                    if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (snapshot.data.length != 0) {
-                      return GridView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          controller: _scrollController,
-                          key: PageStorageKey(widget.path),
-                          padding:
-                              EdgeInsets.only(left: 10.0, right: 10.0, top: 0),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 4),
-                          itemCount: snapshot.data.length,
-                          itemBuilder: (context, index) {
-                            // folder
-                            if (snapshot.data[index] is MyFolder) {
-                              return FolderWidget(
-                                  path: snapshot.data[index].path,
-                                  name: snapshot.data[index].name);
+          // It is better solution for `NestedScrollView` to be wrapped in `RefreshIndicator` widget
+          child: NestedScrollView(
+            headerSliverBuilder: (context, val) => [
+              SliverAppBar(
+                leading: BackButton(onPressed: () {
+                  if (coreNotifier.currentPath.absolute.path ==
+                      pathlib.separator) {
+                    Navigator.popUntil(context,
+                        ModalRoute.withName(Navigator.defaultRouteName));
+                  } else {
+                    coreNotifier.navigateBackdward();
+                  }
+                }),
+                actions: <Widget>[
+                  IconButton(
+                    // Go home
+                    onPressed: () {
+                      Navigator.popUntil(context,
+                          ModalRoute.withName(Navigator.defaultRouteName));
+                    },
+                    icon: Icon(Icons.home),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.search),
+                    onPressed: () => showSearch(
+                        context: context, delegate: Search(path: widget.path)),
+                  ),
+                  AppBarPopupMenu(path: widget.path)
+                ],
+                bottom: PreferredSize(
+                  preferredSize: Size.fromHeight(25),
+                  child: Container(
+                      alignment: Alignment.centerLeft,
+                      margin: EdgeInsets.all(4.0),
+                      child: AppBarPathWidget(
+                        onDirectorySelected: (dir) {
+                          coreNotifier.navigateToDirectory(dir.absolute.path);
+                        },
+                        path: coreNotifier.currentPath.absolute.path,
+                      )),
+                ),
+              ),
+            ],
+            body: Consumer<CoreNotifier>(
+              builder: (context, model, child) => FutureBuilder<List<dynamic>>(
+                // This function Invoked every time user go back to the previous directory
+                future: filesystem.getFoldersAndFiles(
+                    model.currentPath.absolute.path,
+                    keepHidden: preferences.hidden),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.none:
+                      return Text('Press button to start.');
+                    case ConnectionState.active:
+                    case ConnectionState.waiting:
+                      return Center(child: CircularProgressIndicator());
+                    case ConnectionState.done:
+                      if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      } else if (snapshot.data.length != 0) {
+                        return GridView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            controller: _scrollController,
+                            key: PageStorageKey(widget.path),
+                            padding: EdgeInsets.only(
+                                left: 10.0, right: 10.0, top: 0),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 4),
+                            itemCount: snapshot.data.length,
+                            itemBuilder: (context, index) {
+                              // folder
+                              if (snapshot.data[index] is MyFolder) {
+                                return FolderWidget(
+                                    path: snapshot.data[index].path,
+                                    name: snapshot.data[index].name);
 
-                              // file
-                            } else if (snapshot.data[index] is MyFile) {
-                              return FileWidget(
-                                name: snapshot.data[index].name,
-                                onTap: () {
-                                  _printFuture(
-                                      OpenFile.open(snapshot.data[index].path));
-                                },
-                                onLongPress: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => FileContextDialog(
-                                            path: snapshot.data[index].path,
-                                            name: snapshot.data[index].name,
-                                          ));
-                                },
-                              );
-                            }
-                            return Container();
-                          });
-                    } else {
-                      return Center(
-                        child: Text("empty directory!"),
-                      );
-                    }
-                }
-                return null; // unreachable
-              },
+                                // file
+                              } else if (snapshot.data[index] is MyFile) {
+                                return FileWidget(
+                                  name: snapshot.data[index].name,
+                                  onTap: () {
+                                    _printFuture(OpenFile.open(
+                                        snapshot.data[index].path));
+                                  },
+                                  onLongPress: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) => FileContextDialog(
+                                              path: snapshot.data[index].path,
+                                              name: snapshot.data[index].name,
+                                            ));
+                                  },
+                                );
+                              }
+                              return Container();
+                            });
+                      } else {
+                        return Center(
+                          child: Text("empty directory!"),
+                        );
+                      }
+                  }
+                  return null; // unreachable
+                },
+              ),
             ),
           ),
         ),
