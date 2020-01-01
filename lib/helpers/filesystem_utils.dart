@@ -2,8 +2,6 @@
 import 'dart:io';
 
 // packages
-import 'package:basic_file_manager/models/file.dart';
-import 'package:basic_file_manager/models/folder.dart';
 import 'package:basic_file_manager/notifiers/preferences.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as pathlib;
@@ -11,7 +9,7 @@ import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
 
 // local files
-import 'package:basic_file_manager/helpers/array_utils.dart' as utils;
+import 'package:basic_file_manager/helpers/io_extensions.dart';
 
 String storageRootPath = "/storage/emulated/0/";
 
@@ -45,41 +43,39 @@ Future<Directory> getExternalStorageWithoutDataDir(
 }
 
 /// keepHidden: show files that start with .
-Future<List<dynamic>> getFoldersAndFiles(String path,
+Future<List<FileSystemEntity>> getFoldersAndFiles(String path,
     {changeCurrentPath: true,
     Sorting sortedBy: Sorting.Type,
     reverse: false,
     recursive: false,
     keepHidden: false}) async {
   Directory _path = Directory(path);
-  List<dynamic> _files;
+  List<FileSystemEntity> _files;
   try {
     _files = await _path.list(recursive: recursive).toList();
     _files = _files.map((path) {
       if (FileSystemEntity.isDirectorySync(path.path))
-        return MyFolder(
-            name: pathlib.split(path.absolute.path).last,
-            path: path.absolute.path,
-            type: "Directory");
+        return Directory(
+          path.absolute.path,
+        );
       else
-        return MyFile(
-            name: pathlib.split(path.absolute.path).last,
-            path: path.absolute.path,
-            type: "File");
+        return File(
+          path.absolute.path,
+        );
     }).toList();
 
     // Removing hidden files & folders from the list
     if (!keepHidden) {
-      print("Core: excluding hidden");
-      _files.removeWhere((test) {
-        return test.name.startsWith('.') == true;
+      print("filesystem->getFoldersAndFiles: excluding hidden");
+      _files.removeWhere((FileSystemEntity test) {
+        return test.basename().startsWith('.') == true;
       });
     }
   } on FileSystemException catch (e) {
     print(e);
     return [];
   }
-  return utils.sort(_files, sortedBy, reverse: reverse);
+  return sort(_files, sortedBy, reverse: reverse);
 }
 
 /// search for files and folder in current directory & sub-directories,
@@ -88,14 +84,14 @@ Future<List<dynamic>> getFoldersAndFiles(String path,
 /// [path]: start point
 ///
 /// [query]: regex or simple string
-Future<List<dynamic>> search(dynamic path, String query,
+Future<List<FileSystemEntity>> search(dynamic path, String query,
     {bool matchCase: false, recursive: true, bool hidden: false}) async {
   int start = DateTime.now().millisecondsSinceEpoch;
 
-  List<dynamic> files =
-      await getFoldersAndFiles(path, recursive: recursive, keepHidden: hidden)
-        ..retainWhere(
-            (test) => test.name.toLowerCase().contains(query.toLowerCase()));
+  List<FileSystemEntity> files = await getFoldersAndFiles(path,
+      recursive: recursive, keepHidden: hidden)
+    ..retainWhere(
+        (test) => test.basename().toLowerCase().contains(query.toLowerCase()));
 
   int end = DateTime.now().millisecondsSinceEpoch;
   print("Search time: ${end - start} ms");
@@ -135,4 +131,27 @@ List<Directory> splitPathToDirectories(String path) {
     pathDir = pathDir.parent;
   }
   return splittedPath.reversed.toList();
+}
+
+Future<List<FileSystemEntity>> sort(List<FileSystemEntity> elements, Sorting by,
+    {bool reverse: false}) async {
+  try {
+    switch (by) {
+      case Sorting.Type:
+        if (!reverse)
+          return elements
+            ..sort((f1, f2) => FileSystemEntity.isDirectorySync(f1.path) ==
+                    FileSystemEntity.isDirectorySync(f2.path)
+                ? 0
+                : 1);
+        else
+          return (elements..sort()).reversed;
+        break;
+      default:
+        return elements..sort();
+    }
+  } catch (e) {
+    print(e);
+    return [];
+  }
 }

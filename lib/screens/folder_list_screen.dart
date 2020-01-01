@@ -1,4 +1,6 @@
 // framework
+import 'dart:io';
+
 import 'package:basic_file_manager/screens/storage_screen.dart';
 import 'package:basic_file_manager/ui/widgets/appbar_path_widget.dart';
 import 'package:flutter/material.dart';
@@ -15,11 +17,10 @@ import 'package:basic_file_manager/ui/widgets/search.dart';
 import 'package:basic_file_manager/notifiers/preferences.dart';
 import 'package:basic_file_manager/ui/widgets/create_dialog.dart';
 import 'package:basic_file_manager/ui/widgets/file.dart';
-import 'package:basic_file_manager/models/file.dart';
-import 'package:basic_file_manager/models/folder.dart';
 import 'package:basic_file_manager/ui/widgets/folder.dart';
 import 'package:basic_file_manager/helpers/filesystem_utils.dart' as filesystem;
 import 'package:basic_file_manager/ui/widgets/context_dialog.dart';
+import 'package:basic_file_manager/helpers/io_extensions.dart';
 
 class FolderListScreen extends StatefulWidget {
   final String path;
@@ -100,12 +101,14 @@ class _FolderListScreenState extends State<FolderListScreen>
               ),
             ],
             body: Consumer<CoreNotifier>(
-              builder: (context, model, child) => FutureBuilder<List<dynamic>>(
+              builder: (context, model, child) =>
+                  FutureBuilder<List<FileSystemEntity>>(
                 // This function Invoked every time user go back to the previous directory
                 future: filesystem.getFoldersAndFiles(
                     model.currentPath.absolute.path,
                     keepHidden: preferences.hidden),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<FileSystemEntity>> snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.none:
                       return Text('Press button to start.');
@@ -128,15 +131,15 @@ class _FolderListScreenState extends State<FolderListScreen>
                             itemCount: snapshot.data.length,
                             itemBuilder: (context, index) {
                               // folder
-                              if (snapshot.data[index] is MyFolder) {
+                              if (snapshot.data[index] is Directory) {
                                 return FolderWidget(
                                     path: snapshot.data[index].path,
-                                    name: snapshot.data[index].name);
+                                    name: snapshot.data[index].basename());
 
                                 // file
-                              } else if (snapshot.data[index] is MyFile) {
+                              } else if (snapshot.data[index] is File) {
                                 return FileWidget(
-                                  name: snapshot.data[index].name,
+                                  name: snapshot.data[index].basename(),
                                   onTap: () {
                                     _printFuture(OpenFile.open(
                                         snapshot.data[index].path));
@@ -146,7 +149,8 @@ class _FolderListScreenState extends State<FolderListScreen>
                                         context: context,
                                         builder: (context) => FileContextDialog(
                                               path: snapshot.data[index].path,
-                                              name: snapshot.data[index].name,
+                                              name: snapshot.data[index]
+                                                  .basename(),
                                             ));
                                   },
                                 );

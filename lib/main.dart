@@ -9,13 +9,14 @@ import 'package:basic_file_manager/notifiers/core.dart';
 import 'package:basic_file_manager/screens/folder_list_screen.dart';
 import 'package:basic_file_manager/notifiers/preferences.dart';
 import 'package:basic_file_manager/screens/storage_screen.dart';
+import 'package:basic_file_manager/helpers/io_extensions.dart';
 
 // packages
 import 'package:provider/provider.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:path_provider/path_provider.dart';
-//import 'package:simple_permissions/simple_permissions.dart';
+
 
 main() {
   runApp(MultiProvider(

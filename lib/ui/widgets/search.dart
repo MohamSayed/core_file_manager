@@ -1,4 +1,6 @@
 // framework
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 // packages
@@ -7,9 +9,8 @@ import 'package:provider/provider.dart';
 // app files
 import 'package:basic_file_manager/notifiers/core.dart';
 import 'package:basic_file_manager/screens/folder_list_screen.dart';
-import 'package:basic_file_manager/models/file.dart';
-import 'package:basic_file_manager/models/folder.dart';
 import 'package:basic_file_manager/helpers/filesystem_utils.dart' as filesystem;
+import 'package:basic_file_manager/helpers/io_extensions.dart';
 
 class Search extends SearchDelegate<String> {
   final String path;
@@ -104,7 +105,7 @@ class _Results extends StatelessWidget {
     @required this.results,
   }) : super(key: key);
 
-  final List<dynamic> results;
+  final List<FileSystemEntity> results;
 
   @override
   Widget build(BuildContext context) {
@@ -113,10 +114,10 @@ class _Results extends StatelessWidget {
       addAutomaticKeepAlives: true,
       key: key,
       itemBuilder: (context, index) {
-        if (results[index] is MyFolder) {
+        if (results[index] is Directory) {
           return ListTile(
             leading: Icon(Icons.folder),
-            title: Text(results[index].name),
+            title: Text(results[index].basename()),
             onTap: () {
               Navigator.push(
                   context,
@@ -126,16 +127,16 @@ class _Results extends StatelessWidget {
                           )));
             },
           );
-        } else if (results[index] is MyFile) {
+        } else if (results[index] is File) {
           return ListTile(
             leading: Icon(Icons.image),
-            title: Text(results[index].name),
+            title: Text(results[index].basename()),
             onTap: () {},
           );
         } else
           return ListTile(
             leading: Icon(Icons.image),
-            title: Text(results[index].name),
+            title: Text(results[index].basename()),
             onTap: () {},
           );
       },

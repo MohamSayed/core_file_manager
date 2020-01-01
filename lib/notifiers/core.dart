@@ -12,9 +12,6 @@ import 'package:path_provider/path_provider.dart';
 
 // app files
 import 'package:basic_file_manager/notifiers/preferences.dart';
-import 'package:basic_file_manager/helpers/array_utils.dart' as array_utils;
-import 'package:basic_file_manager/models/file.dart';
-import 'package:basic_file_manager/models/folder.dart';
 import 'package:simple_permissions/simple_permissions.dart';
 
 class CoreNotifier extends ChangeNotifier {
