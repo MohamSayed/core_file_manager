@@ -1,8 +1,7 @@
-// framework
+// dart
 import 'dart:io';
 
-import 'package:basic_file_manager/screens/storage_screen.dart';
-import 'package:basic_file_manager/ui/widgets/appbar_path_widget.dart';
+// framework
 import 'package:flutter/material.dart';
 
 // packages
@@ -21,6 +20,7 @@ import 'package:basic_file_manager/ui/widgets/folder.dart';
 import 'package:basic_file_manager/helpers/filesystem_utils.dart' as filesystem;
 import 'package:basic_file_manager/ui/widgets/context_dialog.dart';
 import 'package:basic_file_manager/helpers/io_extensions.dart';
+import 'package:basic_file_manager/ui/widgets/appbar_path_widget.dart';
 
 class FolderListScreen extends StatefulWidget {
   final String path;
