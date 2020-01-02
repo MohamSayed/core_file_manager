@@ -61,6 +61,7 @@ class _FolderListScreenState extends State<FolderListScreen>
           child: NestedScrollView(
             headerSliverBuilder: (context, val) => [
               SliverAppBar(
+                floating: true,
                 leading: BackButton(onPressed: () {
                   if (coreNotifier.currentPath.absolute.path ==
                       pathlib.separator) {
