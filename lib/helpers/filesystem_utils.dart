@@ -1,4 +1,5 @@
 // dart
+import 'dart:async';
 import 'dart:io';
 
 // packages
@@ -78,6 +79,38 @@ Future<List<FileSystemEntity>> getFoldersAndFiles(String path,
   return sort(_files, sortedBy, reverse: reverse);
 }
 
+/// keepHidden: show files that start with .
+Stream<List<FileSystemEntity>> fileStream(String path,
+    {changeCurrentPath: true,
+    Sorting sortedBy: Sorting.Type,
+    reverse: false,
+    recursive: false,
+    keepHidden: false}) async* {
+  Directory _path = Directory(path);
+  List<FileSystemEntity> _files = List<FileSystemEntity>();
+  try {
+    if (!keepHidden) {
+      yield* _path.list(recursive: recursive).transform(
+          StreamTransformer.fromHandlers(
+              handleData: (FileSystemEntity data, sink) {
+        _files.add(data);
+        sink.add(_files);
+      }));
+    } else {
+      yield* _path.list(recursive: recursive).transform(
+          StreamTransformer.fromHandlers(
+              handleData: (FileSystemEntity data, sink) {
+        if (data.basename().startsWith('.')) {
+          _files.add(data);
+          sink.add(_files);
+        }
+      }));
+    }
+  } on FileSystemException catch (e) {
+    yield [];
+  }
+}
+
 /// search for files and folder in current directory & sub-directories,
 /// and return [File] or [Directory]
 ///
@@ -96,6 +129,22 @@ Future<List<FileSystemEntity>> search(dynamic path, String query,
   int end = DateTime.now().millisecondsSinceEpoch;
   print("Search time: ${end - start} ms");
   return files;
+}
+
+/// search for files and folder in current directory & sub-directories,
+/// and return [File] or [Directory]
+///
+/// `path`: start point
+/// `query`: regex or simple string
+Stream<List<FileSystemEntity>> searchStream(dynamic path, String query,
+    {bool matchCase: false, recursive: true, bool hidden: false}) async* {
+  yield* fileStream(path, recursive: recursive)
+      .transform(StreamTransformer.fromHandlers(handleData: (data, sink) {
+    // Filtering
+    data.retainWhere(
+        (test) => test.basename().toLowerCase().contains(query.toLowerCase()));
+    sink.add(data);
+  }));
 }
 
 Future<int> getFreeSpace(String path) async {

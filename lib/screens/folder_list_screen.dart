@@ -24,9 +24,7 @@ import 'package:basic_file_manager/ui/widgets/appbar_path_widget.dart';
 
 class FolderListScreen extends StatefulWidget {
   final String path;
-  final bool home;
-  const FolderListScreen({@required this.path, this.home: false})
-      : assert(path != null);
+  const FolderListScreen({@required this.path}) : assert(path != null);
   @override
   _FolderListScreenState createState() => _FolderListScreenState();
 }
@@ -103,10 +101,9 @@ class _FolderListScreenState extends State<FolderListScreen>
             ],
             body: Consumer<CoreNotifier>(
               builder: (context, model, child) =>
-                  FutureBuilder<List<FileSystemEntity>>(
+                  StreamBuilder<List<FileSystemEntity>>(
                 // This function Invoked every time user go back to the previous directory
-                future: filesystem.getFoldersAndFiles(
-                    model.currentPath.absolute.path,
+                stream: filesystem.fileStream(model.currentPath.absolute.path,
                     keepHidden: preferences.hidden),
                 builder: (BuildContext context,
                     AsyncSnapshot<List<FileSystemEntity>> snapshot) {
@@ -114,11 +111,15 @@ class _FolderListScreenState extends State<FolderListScreen>
                     case ConnectionState.none:
                       return Text('Press button to start.');
                     case ConnectionState.active:
+                      print("none");
+                      return null;
                     case ConnectionState.waiting:
                       return Center(child: CircularProgressIndicator());
                     case ConnectionState.done:
                       if (snapshot.hasError) {
-                        return Center(child: Text('Error: ${snapshot.error}'));
+                        if (snapshot.error is FileSystemException) {
+                          return Center(child: Text("Permission Denied"));
+                        }
                       } else if (snapshot.data.length != 0) {
                         return GridView.builder(
                             physics: const AlwaysScrollableScrollPhysics(),
@@ -136,7 +137,6 @@ class _FolderListScreenState extends State<FolderListScreen>
                                 return FolderWidget(
                                     path: snapshot.data[index].path,
                                     name: snapshot.data[index].basename());
-
                                 // file
                               } else if (snapshot.data[index] is File) {
                                 return FileWidget(

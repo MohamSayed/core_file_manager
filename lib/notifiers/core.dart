@@ -29,6 +29,7 @@ class CoreNotifier extends ChangeNotifier {
   }
 
   Future<void> navigateToDirectory(String newPath) async {
+    print("core->navigateToDirectory: $newPath");
     currentPath = Directory(newPath);
     notifyListeners();
   }

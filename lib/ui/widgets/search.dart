@@ -38,8 +38,9 @@ class Search extends SearchDelegate<String> {
   @override
   Widget buildResults(BuildContext context) {
     return Consumer<CoreNotifier>(
-        builder: (context, model, child) => FutureBuilder(
-              future: filesystem.search(path, query,
+        builder: (context, model, child) =>
+            StreamBuilder<List<FileSystemEntity>>(
+              stream: filesystem.searchStream(path, query,
                   recursive: true), //	a	Stream<int>	or	null
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasError) return Text('Error:	${snapshot.error}');
@@ -55,7 +56,7 @@ class Search extends SearchDelegate<String> {
                           Text('Searching...')
                         ]));
                   case ConnectionState.active:
-                    return Text('${snapshot.data}');
+                    return Container();
                   case ConnectionState.done:
                     return _Results(
                       results: snapshot.data,
@@ -69,8 +70,8 @@ class Search extends SearchDelegate<String> {
   @override
   Widget buildSuggestions(BuildContext context) {
     return Consumer<CoreNotifier>(
-        builder: (context, model, child) => FutureBuilder(
-              future: filesystem.search(path, query,
+        builder: (context, model, child) => StreamBuilder(
+              stream: filesystem.searchStream(path, query,
                   recursive: true), //	a	Stream<int>	or	null
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasError) return Text('Error:	${snapshot.error}');
