@@ -105,14 +105,14 @@ class _FolderListScreenState extends State<FolderListScreen>
                 // This function Invoked every time user go back to the previous directory
                 stream: filesystem.fileStream(model.currentPath.absolute.path,
                     keepHidden: preferences.hidden),
+
                 builder: (BuildContext context,
                     AsyncSnapshot<List<FileSystemEntity>> snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.none:
-                      return Text('Press button to start.');
+                      return Center(child: Text('Press button to start.'));
                     case ConnectionState.active:
-                      print("none");
-                      return null;
+                      return Container(width: 0.0, height: 0.0);
                     case ConnectionState.waiting:
                       return Center(child: CircularProgressIndicator());
                     case ConnectionState.done:
@@ -121,6 +121,8 @@ class _FolderListScreenState extends State<FolderListScreen>
                           return Center(child: Text("Permission Denied"));
                         }
                       } else if (snapshot.data.length != 0) {
+                        debugPrint(
+                            "FolderListScreen -> Folder Grid: data length = ${snapshot.data.length} ");
                         return GridView.builder(
                             physics: const AlwaysScrollableScrollPhysics(),
                             controller: _scrollController,
@@ -160,7 +162,7 @@ class _FolderListScreenState extends State<FolderListScreen>
                             });
                       } else {
                         return Center(
-                          child: Text("empty directory!"),
+                          child: Text("Empty Directory!"),
                         );
                       }
                   }

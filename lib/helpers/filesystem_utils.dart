@@ -5,6 +5,7 @@ import 'dart:io';
 // packages
 import 'package:basic_file_manager/notifiers/preferences.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:path/path.dart' as pathlib;
 import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
@@ -89,24 +90,34 @@ Stream<List<FileSystemEntity>> fileStream(String path,
   Directory _path = Directory(path);
   List<FileSystemEntity> _files = List<FileSystemEntity>();
   try {
-    if (!keepHidden) {
-      yield* _path.list(recursive: recursive).transform(
-          StreamTransformer.fromHandlers(
-              handleData: (FileSystemEntity data, sink) {
-        _files.add(data);
-        sink.add(_files);
-      }));
-    } else {
-      yield* _path.list(recursive: recursive).transform(
-          StreamTransformer.fromHandlers(
-              handleData: (FileSystemEntity data, sink) {
-        if (data.basename().startsWith('.')) {
+    // Checking if the target directory contains files inside or not!
+    // so that [StreamBuilder] won't emit the same old data if there are
+    // no elements inside that directory.
+    if (_path.listSync(recursive: recursive).length != 0) {
+      if (!keepHidden) {
+        yield* _path.list(recursive: recursive).transform(
+            StreamTransformer.fromHandlers(
+                handleData: (FileSystemEntity data, sink) {
+          debugPrint("filsytem_utils -> fileStream: $data");
           _files.add(data);
           sink.add(_files);
-        }
-      }));
+        }));
+      } else {
+        yield* _path.list(recursive: recursive).transform(
+            StreamTransformer.fromHandlers(
+                handleData: (FileSystemEntity data, sink) {
+          debugPrint("filsytem_utils -> fileStream: $data");
+          if (data.basename().startsWith('.')) {
+            _files.add(data);
+            sink.add(_files);
+          }
+        }));
+      }
+    } else {
+      yield [];
     }
   } on FileSystemException catch (e) {
+    print(e);
     yield [];
   }
 }
