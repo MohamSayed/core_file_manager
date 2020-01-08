@@ -1,6 +1,8 @@
-// framework
+// dart sdk
 import 'dart:io';
+import 'dart:ui';
 
+// framework
 import 'package:flutter/material.dart';
 
 // packages
@@ -10,8 +12,10 @@ import 'package:path/path.dart' as pathlib;
 import 'package:basic_file_manager/helpers/filesystem_utils.dart' as filesystem;
 
 class AppBarPathWidget extends StatelessWidget {
+  /// path: i.e /storage/emulated/0/...
   final String path;
 
+  /// Triggered on selecting a [Directory] from pathbar
   final Function(Directory) onDirectorySelected;
 
   const AppBarPathWidget(
@@ -26,27 +30,50 @@ class AppBarPathWidget extends StatelessWidget {
       child: Row(
           children: filesystem.splitPathToDirectories(path).map((splittedPath) {
         if (splittedPath.absolute.path == pathlib.separator) {
-          return GestureDetector(
+          return PathBarItem(
               onTap: () {
                 onDirectorySelected(Directory("/"));
                 print(splittedPath);
               },
-              child: Text(pathlib.separator));
+              path: pathlib.separator);
         } else {
-          return GestureDetector(
+          return PathBarItem(
             onTap: () {
               onDirectorySelected(splittedPath);
               print(splittedPath);
             },
-            child: Container(
-              child: Text(
+            path:
                 "${pathlib.basename(splittedPath.absolute.path)}${pathlib.separator}",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
           );
         }
       }).toList()),
+    );
+  }
+}
+
+class PathBarItem extends StatefulWidget {
+  final String path;
+  final TextStyle style;
+  final onTap;
+
+  const PathBarItem({Key key, @required this.path, this.style, this.onTap})
+      : super(key: key);
+
+  @override
+  _PathBarItemState createState() => _PathBarItemState();
+}
+
+class _PathBarItemState extends State<PathBarItem> {
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: widget.onTap,
+      child: Container(
+        child: Text(
+          widget.path,
+          style: widget.style ?? TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
     );
   }
 }
