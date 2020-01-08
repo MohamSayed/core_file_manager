@@ -17,7 +17,6 @@ import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:path_provider/path_provider.dart';
 
-
 main() {
   runApp(MultiProvider(
     providers: [
@@ -28,8 +27,6 @@ main() {
     child: MyApp(),
   ));
 }
-
-
 
 class MyApp extends StatelessWidget {
   @override
@@ -44,11 +41,7 @@ class MyApp extends StatelessWidget {
           //_requestPermissions();
           FlutterStatusbarcolor.setStatusBarColor(theme.primaryColor);
           return MaterialApp(
-            title: 'Flutter Demo',
-            theme: theme,
-            
-            home: StorageScreen()
-          );
+              title: 'Flutter Demo', theme: theme, home: StorageScreen());
         });
   }
 }
