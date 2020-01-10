@@ -166,9 +166,19 @@ Future<int> getFreeSpace(String path) async {
 
 /// Create folder by path
 /// * i.e: `.createFolderByPath("/storage/emulated/0/", "folder name" )`
-Future<Directory> createFolderByPath(String path, String folderName) async {
+/// 
+/// Supply path alone to create by already combined path, or path + filename
+/// to be combined
+Future<Directory> createFolderByPath(String path, {String folderName}) async {
   print("filesystem_utils->createFolderByPath: $folderName @ $path");
-  var _directory = Directory(pathlib.join(path, folderName));
+  var _directory;
+
+  if (folderName != null) {
+    _directory = Directory(pathlib.join(path, folderName));
+  } else {
+    _directory = Directory(path);
+  }
+
   try {
     if (!_directory.existsSync()) {
       _directory.create();

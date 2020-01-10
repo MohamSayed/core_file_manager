@@ -83,7 +83,7 @@ class _FolderListScreenState extends State<FolderListScreen>
                     onPressed: () => showSearch(
                         context: context, delegate: Search(path: widget.path)),
                   ),
-                  AppBarPopupMenu(path: widget.path)
+                  AppBarPopupMenu(path: coreNotifier.currentPath.absolute.path)
                 ],
                 bottom: PreferredSize(
                   preferredSize: Size.fromHeight(25),
@@ -212,6 +212,8 @@ class FolderFloatingActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var coreNotifier = Provider.of<CoreNotifier>(context);
+
     if (enabled == true) {
       return FloatingActionButton(
         tooltip: "Create Folder",
@@ -219,7 +221,14 @@ class FolderFloatingActionButton extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(16.0))),
         child: Icon(Icons.add),
         onPressed: () => showDialog(
-            context: context, builder: (context) => CreateFolderDialog()),
+            context: context,
+            builder: (context) => CreateDialog(
+                  path: coreNotifier.currentPath.absolute.path,
+                  onCreate: (path) {
+                    filesystem.createFolderByPath(path);
+                    coreNotifier.reload();
+                  },
+                )),
       );
     } else
       return Container(

@@ -1,28 +1,47 @@
+// dart
+import 'dart:io';
+
 // framework
 import 'package:flutter/material.dart';
 
 // packages & plugins
-import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
+import 'package:path/path.dart' as pathlib;
 
 // app
 import 'package:basic_file_manager/helpers/filesystem_utils.dart' as filesystem;
-import 'package:basic_file_manager/notifiers/core.dart';
 
-class CreateFolderDialog extends StatefulWidget {
+class CreateDialog extends StatefulWidget {
   final String path;
+  final Text title;
+  final Function(String) onCreate;
 
   /// Show a dialog that accept allowed linux name
-  const CreateFolderDialog({this.path});
+  const CreateDialog(
+      {@required this.path, this.title, @required this.onCreate});
   @override
-  _CreateFileDialogState createState() => _CreateFileDialogState();
+  _CreateDialogState createState() => _CreateDialogState();
 }
 
-class _CreateFileDialogState extends State<CreateFolderDialog> {
+class _CreateDialogState extends State<CreateDialog> {
   TextEditingController _textEditingController;
-  bool _allowedFolderName = true;
+
+  int _status = 0;
+
   // if creating hidden folder
-  bool _hidden = false;
+  bool _helperText = false;
+
+  String _fileName;
+
+  bool _emptyText = true;
+
+  // 1
+  String _disallowedCharsError = "Disallowed Characters";
+
+  // 2
+  String _fileAlreadyExistsError = "File already exists!";
+
+  String hiddenFileText = "This folder will be hidden";
+
   @override
   void initState() {
     _textEditingController = TextEditingController();
@@ -37,106 +56,103 @@ class _CreateFileDialogState extends State<CreateFolderDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<CoreNotifier>(
-        builder: (context, model, child) => Builder(
-            builder: (context) => ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: SimpleDialog(
-                  title: Text("Create new folder"),
-                  contentPadding: EdgeInsets.all(20),
+    return Builder(
+        builder: (context) => ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: SimpleDialog(
+              title: widget.title ?? Text("Create new"),
+              contentPadding: EdgeInsets.all(20),
+              children: <Widget>[
+                // album textfield
+                Row(
                   children: <Widget>[
-                    // album textfield
-                    Row(
-                      children: <Widget>[
-                        Flexible(
-                            child: TextField(
-                          controller: _textEditingController,
-                          onChanged: (name) {
-                            // Not allowed characters for album name, since we are creating real
-                            // folder on linux
-                            if (name.contains("/")) {
-                              if (_allowedFolderName == true) {
-                                setState(() {
-                                  _allowedFolderName = false;
-                                });
-                              }
-                            } else {
-                              // creating a hidden folder helper text
-                              if (name.startsWith('.')) {
-                                if (_hidden == false) {
-                                  setState(() {
-                                    _hidden = true;
-                                  });
-                                }
-                              } else {
-                                if (_hidden == true) {
-                                  setState(() {
-                                    _hidden = false;
-                                  });
-                                }
-                              }
-                              if (_allowedFolderName == false) {
-                                setState(() {
-                                  _allowedFolderName = true;
-                                });
-                              }
-                            }
-                          },
-                          decoration: InputDecoration(
-                              errorText: !_allowedFolderName
-                                  ? " Disallowed Chararcters: /"
-                                  : null,
-                              hintText: "Folder Name",
-                              helperText:
-                                  _hidden ? "This folder will be hidden" : null,
-                              helperStyle: _hidden
-                                  ? TextStyle(color: Colors.deepOrange)
-                                  : TextStyle()),
-                        ))
-                      ],
-                    ),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      // cancel
-                      children: <Widget>[
-                        FlatButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text(
-                            "Cancel",
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 20, right: 20),
-                        ),
-                        //  create button
-                        FlatButton(
-                          onPressed: _allowedFolderName
-                              ? () async {
-                                  var _directory =
-                                      await filesystem.createFolderByPath(
-                                          model.currentPath.absolute.path,
-                                          _textEditingController?.text);
-                                  model.reload();
-                                  if (_directory != null) {
-                                    // leaving dialog
-                                    Navigator.of(context).pop();
-                                  } else {
-                                    Toast.show("Folder already Exists", context,
-                                        duration: Toast.LENGTH_SHORT,
-                                        gravity: Toast.TOP);
-                                  }
-                                }
-                              : null,
-                          child: Text(
-                            "Create",
-                          ),
-                        ),
-                      ],
-                    )
+                    Flexible(
+                        child: TextField(
+                      controller: _textEditingController,
+                      onChanged: (name) {
+                        _fileName = name;
+                        setState(() {
+                          _status = _validName(name, widget.path);
+                          if (name.isNotEmpty) {
+                            _emptyText = false;
+                          } else {
+                            _emptyText = true;
+                          }
+                          _helperText = name.startsWith('.');
+                        });
+                      },
+                      decoration: InputDecoration(
+                          errorText: _statusText(),
+                          hintText: "Folder Name",
+                          helperText: _helperText ? hiddenFileText : null,
+                          helperStyle: _helperText
+                              ? TextStyle(color: Colors.deepOrange)
+                              : TextStyle()),
+                    ))
                   ],
-                ))));
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  // cancel
+                  children: <Widget>[
+                    FlatButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        "Cancel",
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 20, right: 20),
+                    ),
+                    //  create button
+                    FlatButton(
+                      onPressed: _status == 0 && _emptyText == false
+                          ? () {
+                              widget.onCreate(
+                                  pathlib.join(widget.path, _fileName));
+                              Navigator.of(context).pop();
+                            }
+                          : null,
+                      child: Text(
+                        "Create",
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            )));
+  }
+
+  // 0: valid
+  // 1: invalid unexpected character
+  // 2: already exists
+  int _validName(String name, String currentPath) {
+    if (name.contains('/') || name.contains(r'\')) {
+      return 1;
+    } else if (Directory(pathlib.join(currentPath, name)).existsSync()) {
+      if (name.isEmpty) {
+        return 0;
+      } else
+        return 2;
+    } else {
+      return 0;
+    }
+  }
+
+  // 0: valid
+  // 1: invalid unexpected character
+  // 2: already exists
+  String _statusText() {
+    if (_status == 0) {
+      return null;
+    } else if (_status == 1) {
+      return _disallowedCharsError;
+    } else if (_status == 2) {
+      return _fileAlreadyExistsError;
+    }
+    return null;
   }
 }

@@ -9,6 +9,7 @@ import 'package:basic_file_manager/screens/about.dart';
 import 'package:basic_file_manager/screens/settings.dart';
 import 'package:basic_file_manager/notifiers/core.dart';
 import 'package:basic_file_manager/ui/widgets/create_dialog.dart';
+import 'package:basic_file_manager/helpers/filesystem_utils.dart' as filesystem;
 
 class AppBarPopupMenu extends StatelessWidget {
   final String path;
@@ -25,7 +26,15 @@ class AppBarPopupMenu extends StatelessWidget {
             } else if (value == "folder") {
               showDialog(
                   context: context,
-                  builder: (context) => CreateFolderDialog(path: path)) ;
+                  builder: (context) => CreateDialog(
+                        onCreate: (path) {
+                          filesystem.createFolderByPath(path);
+                          // leaving dialog
+                          model.reload();
+                        },
+                        path: path,
+                        title: Text("Create new folder"),
+                      ));
             } else if (value == "settings") {
               Navigator.push(
                   context, MaterialPageRoute(builder: (context) => Settings()));
