@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
           //_requestPermissions();
           FlutterStatusbarcolor.setStatusBarColor(theme.primaryColor);
           return MaterialApp(
-              title: 'Flutter Demo', theme: theme, home: StorageScreen());
+              title: 'Basic FIle Manager', theme: theme, home: StorageScreen());
         });
   }
 }
