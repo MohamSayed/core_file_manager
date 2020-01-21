@@ -5,12 +5,12 @@ import 'dart:io';
 import 'package:core_file_manager/notifiers/core.dart';
 import 'package:flutter/material.dart';
 
-// packages
+// external packages
 import 'package:path_provider/path_provider.dart';
+import 'package:tuple/tuple.dart';
 
 // app
-import 'package:core_file_manager/helpers/filesystem_utils.dart';
-import 'package:core_file_manager/screens/folder_list_screen.dart';
+import 'package:core_file_manager/screens/directory_screen.dart';
 import 'package:core_file_manager/ui/widgets/appbar_popup_menu.dart';
 import 'package:core_file_manager/helpers/filesystem_utils.dart' as filesystem;
 import 'package:provider/provider.dart';
@@ -23,19 +23,18 @@ class StorageScreen extends StatefulWidget {
 class _StorageScreenState extends State<StorageScreen> {
   @override
   Widget build(BuildContext context) {
-    var coreNotifier = Provider.of<CoreNotifier>(context, listen: false);
-
+    debugPrint("StorageScreen: built or rebuilt");
+    final coreNotifier = Provider.of<CoreNotifier>(context, listen: false);
     return Scaffold(
       appBar:
           AppBar(title: Text("Storages"), actions: <Widget>[AppBarPopupMenu()]),
       body: FutureBuilder<List<FileSystemEntity>>(
-        future:
-            getStorageList(), // a previously-obtained Future<String> or null
+        future: filesystem.getStorageList(),
         builder: (BuildContext context,
             AsyncSnapshot<List<FileSystemEntity>> snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
-              return Text('Press button to start.');
+              return Text('Pull to refresh!');
             case ConnectionState.active:
             case ConnectionState.waiting:
               return Center(
@@ -61,7 +60,7 @@ class _StorageScreenState extends State<StorageScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => FolderListScreen(
+                                builder: (context) => DirectoryScreen(
                                     path: snapshot
                                         .data[position].absolute.path)));
                       },

@@ -5,7 +5,6 @@ import 'dart:io';
 // packages
 import 'package:core_file_manager/notifiers/preferences.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:path/path.dart' as pathlib;
 import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
@@ -19,6 +18,7 @@ String storageRootPath = "/storage/emulated/0/";
 Future<List<Directory>> getStorageList() async {
   List<Directory> paths = await getExternalStorageDirectories();
   List<Directory> filteredPaths = List<Directory>();
+  print("filesystem->getStorageList");
   for (Directory dir in paths) {
     filteredPaths
         .add(await getExternalStorageWithoutDataDir(dir.absolute.path));
@@ -31,13 +31,12 @@ Future<List<Directory>> getStorageList() async {
 Future<Directory> getExternalStorageWithoutDataDir(
     String unfilteredPath) async {
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
-  print("storage_helper->getExternalStorageWithoutDataDir: " +
-      packageInfo.packageName);
   String subPath =
       pathlib.join("Android", "data", packageInfo.packageName, "files");
   if (unfilteredPath.contains(subPath)) {
     String filteredPath = unfilteredPath.split(subPath).first;
-    print("storage_helper->getExternalStorageWithoutDataDir: " + filteredPath);
+    print(
+        "filesystem->getExternalStorageWithoutDataDir: $filteredPath -- ${packageInfo.packageName}");
     return Directory(filteredPath);
   } else {
     return Directory(unfilteredPath);
@@ -98,7 +97,6 @@ Stream<List<FileSystemEntity>> fileStream(String path,
         yield* _path.list(recursive: recursive).transform(
             StreamTransformer.fromHandlers(
                 handleData: (FileSystemEntity data, sink) {
-          debugPrint("filsytem_utils -> fileStream: $data");
           _files.add(data);
           sink.add(_files);
         }));
@@ -106,7 +104,6 @@ Stream<List<FileSystemEntity>> fileStream(String path,
         yield* _path.list(recursive: recursive).transform(
             StreamTransformer.fromHandlers(
                 handleData: (FileSystemEntity data, sink) {
-          debugPrint("filsytem_utils -> fileStream: $data");
           if (data.basename().startsWith('.')) {
             _files.add(data);
             sink.add(_files);
@@ -166,7 +163,7 @@ Future<int> getFreeSpace(String path) async {
 
 /// Create folder by path
 /// * i.e: `.createFolderByPath("/storage/emulated/0/", "folder name" )`
-/// 
+///
 /// Supply path alone to create by already combined path, or path + filename
 /// to be combined
 Future<Directory> createFolderByPath(String path, {String folderName}) async {

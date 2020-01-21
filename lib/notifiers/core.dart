@@ -20,13 +20,7 @@ class CoreNotifier extends ChangeNotifier {
   }
 
   // Current user path
-  Directory _currentPath;
-
-  Directory get currentPath => _currentPath;
-
-  set currentPath(Directory currentPath) {
-    _currentPath = currentPath;
-  }
+  Directory currentPath;
 
   Future<void> navigateToDirectory(String newPath) async {
     print("core->navigateToDirectory: $newPath");
@@ -35,10 +29,9 @@ class CoreNotifier extends ChangeNotifier {
   }
 
   Future<void> navigateBackdward() async {
-    if (_currentPath.absolute.path == p.separator) {
-      
+    if (currentPath.absolute.path == p.separator) {
     } else {
-      _currentPath = currentPath.parent;
+      currentPath = currentPath.parent;
     }
     notifyListeners();
   }

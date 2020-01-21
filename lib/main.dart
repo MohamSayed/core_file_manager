@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 // app files
 import 'package:core_file_manager/notifiers/core.dart';
-import 'package:core_file_manager/screens/folder_list_screen.dart';
+import 'package:core_file_manager/screens/directory_screen.dart';
 import 'package:core_file_manager/notifiers/preferences.dart';
 import 'package:core_file_manager/screens/storage_screen.dart';
 import 'package:core_file_manager/helpers/io_extensions.dart';
@@ -38,7 +38,6 @@ class MyApp extends StatelessWidget {
               brightness: brightness,
             ),
         themedWidgetBuilder: (context, theme) {
-          //_requestPermissions();
           FlutterStatusbarcolor.setStatusBarColor(theme.primaryColor);
           return MaterialApp(
               title: 'Basic FIle Manager', theme: theme, home: StorageScreen());

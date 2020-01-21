@@ -12,17 +12,17 @@ import 'package:core_file_manager/ui/widgets/create_dialog.dart';
 import 'package:core_file_manager/helpers/filesystem_utils.dart' as filesystem;
 
 class AppBarPopupMenu extends StatelessWidget {
-  final String path;
-  const AppBarPopupMenu({Key key, this.path}) : super(key: key);
-
+  const AppBarPopupMenu({Key key}) : super(key: key);
+  static int rebuildCount = 0;
   @override
   Widget build(BuildContext context) {
-    print("AppBarPopupMenu(path): $path");
+    rebuildCount += 1;
+    print("AppBarPopupMenu: build or rebuild = $rebuildCount");
     return Consumer<CoreNotifier>(
-      builder: (context, model, child) => PopupMenuButton<String>(
+      builder: (context, coreNotifier, child) => PopupMenuButton<String>(
           onSelected: (value) {
             if (value == "refresh") {
-              model.reload();
+              coreNotifier.reload();
             } else if (value == "folder") {
               showDialog(
                   context: context,
@@ -30,9 +30,9 @@ class AppBarPopupMenu extends StatelessWidget {
                         onCreate: (path) {
                           filesystem.createFolderByPath(path);
                           // leaving dialog
-                          model.reload();
+                          coreNotifier.reload();
                         },
-                        path: path,
+                        path: coreNotifier.currentPath.path,
                         title: Text("Create new folder"),
                       ));
             } else if (value == "settings") {
@@ -42,13 +42,13 @@ class AppBarPopupMenu extends StatelessWidget {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => AboutScreen()));
             } else if (value == "paste") {
-              model.pasteByPath(path);
+              coreNotifier.pasteByPath(coreNotifier.currentPath.path);
             }
             //...
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<String>>[
                 PopupMenuItem<String>(
-                    enabled: model.copyList.isNotEmpty,
+                    enabled: coreNotifier.copyList.isNotEmpty,
                     value: 'paste',
                     child: Text('Paste Here')),
 

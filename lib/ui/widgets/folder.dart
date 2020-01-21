@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 // app
-import 'package:core_file_manager/screens/folder_list_screen.dart';
+import 'package:core_file_manager/screens/directory_screen.dart';
 import 'package:core_file_manager/ui/widgets/context_dialog.dart';
 import 'package:core_file_manager/notifiers/core.dart';
 import 'package:provider/provider.dart';

@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 
 // app files
 import 'package:core_file_manager/notifiers/core.dart';
-import 'package:core_file_manager/screens/folder_list_screen.dart';
+import 'package:core_file_manager/screens/directory_screen.dart';
 import 'package:core_file_manager/helpers/filesystem_utils.dart' as filesystem;
 import 'package:core_file_manager/helpers/io_extensions.dart';
 
@@ -123,7 +123,7 @@ class _Results extends StatelessWidget {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => FolderListScreen(
+                      builder: (context) => DirectoryScreen(
                             path: results[index].path,
                           )));
             },
