@@ -9,8 +9,8 @@ import 'package:open_file/open_file.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 
 // app
-import 'package:basic_file_manager/notifiers/core.dart';
-import 'package:basic_file_manager/screens/details.dart';
+import 'package:core_file_manager/notifiers/core.dart';
+import 'package:core_file_manager/screens/details.dart';
 
 class ContextDialog extends SimpleDialog {
   const ContextDialog({

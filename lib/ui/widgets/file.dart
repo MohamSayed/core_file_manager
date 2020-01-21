@@ -1,4 +1,4 @@
-import 'package:basic_file_manager/ui/widgets/context_dialog.dart';
+import 'package:core_file_manager/ui/widgets/context_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 

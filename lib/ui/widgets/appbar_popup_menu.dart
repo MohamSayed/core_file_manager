@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // app files
-import 'package:basic_file_manager/screens/about.dart';
-import 'package:basic_file_manager/screens/settings.dart';
-import 'package:basic_file_manager/notifiers/core.dart';
-import 'package:basic_file_manager/ui/widgets/create_dialog.dart';
-import 'package:basic_file_manager/helpers/filesystem_utils.dart' as filesystem;
+import 'package:core_file_manager/screens/about.dart';
+import 'package:core_file_manager/screens/settings.dart';
+import 'package:core_file_manager/notifiers/core.dart';
+import 'package:core_file_manager/ui/widgets/create_dialog.dart';
+import 'package:core_file_manager/helpers/filesystem_utils.dart' as filesystem;
 
 class AppBarPopupMenu extends StatelessWidget {
   final String path;

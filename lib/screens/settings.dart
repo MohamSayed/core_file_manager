@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // app
-import 'package:basic_file_manager/notifiers/preferences.dart';
+import 'package:core_file_manager/notifiers/preferences.dart';
 
 class Settings extends StatefulWidget {
   Settings({Key key}) : super(key: key);

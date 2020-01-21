@@ -10,17 +10,17 @@ import 'package:provider/provider.dart';
 import 'package:path/path.dart' as pathlib;
 
 // app files
-import 'package:basic_file_manager/notifiers/core.dart';
-import 'package:basic_file_manager/ui/widgets/appbar_popup_menu.dart';
-import 'package:basic_file_manager/ui/widgets/search.dart';
-import 'package:basic_file_manager/notifiers/preferences.dart';
-import 'package:basic_file_manager/ui/widgets/create_dialog.dart';
-import 'package:basic_file_manager/ui/widgets/file.dart';
-import 'package:basic_file_manager/ui/widgets/folder.dart';
-import 'package:basic_file_manager/helpers/filesystem_utils.dart' as filesystem;
-import 'package:basic_file_manager/ui/widgets/context_dialog.dart';
-import 'package:basic_file_manager/helpers/io_extensions.dart';
-import 'package:basic_file_manager/ui/widgets/appbar_path_widget.dart';
+import 'package:core_file_manager/notifiers/core.dart';
+import 'package:core_file_manager/ui/widgets/appbar_popup_menu.dart';
+import 'package:core_file_manager/ui/widgets/search.dart';
+import 'package:core_file_manager/notifiers/preferences.dart';
+import 'package:core_file_manager/ui/widgets/create_dialog.dart';
+import 'package:core_file_manager/ui/widgets/file.dart';
+import 'package:core_file_manager/ui/widgets/folder.dart';
+import 'package:core_file_manager/helpers/filesystem_utils.dart' as filesystem;
+import 'package:core_file_manager/ui/widgets/context_dialog.dart';
+import 'package:core_file_manager/helpers/io_extensions.dart';
+import 'package:core_file_manager/ui/widgets/appbar_path_widget.dart';
 
 class FolderListScreen extends StatefulWidget {
   final String path;

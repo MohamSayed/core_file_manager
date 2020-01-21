@@ -11,7 +11,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:path_provider/path_provider.dart';
 
 // app files
-import 'package:basic_file_manager/notifiers/preferences.dart';
+import 'package:core_file_manager/notifiers/preferences.dart';
 import 'package:simple_permissions/simple_permissions.dart';
 
 class CoreNotifier extends ChangeNotifier {

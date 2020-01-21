@@ -1,8 +1,8 @@
-# basic_file_manager
+# core_file_manager
 
 A simple **application** for managing files on Android devices using Flutter framework
 
-- [basic_file_manager](#basicfilemanager)
+- [core_file_manager](#basicfilemanager)
   - [Getting Started](#getting-started)
   - [Running the app](#running-the-app)
   - [Features](#features)

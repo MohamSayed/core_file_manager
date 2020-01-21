@@ -3,7 +3,7 @@ import 'dart:async';
 import 'dart:io';
 
 // packages
-import 'package:basic_file_manager/notifiers/preferences.dart';
+import 'package:core_file_manager/notifiers/preferences.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart' as pathlib;
@@ -11,7 +11,7 @@ import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
 
 // local files
-import 'package:basic_file_manager/helpers/io_extensions.dart';
+import 'package:core_file_manager/helpers/io_extensions.dart';
 
 String storageRootPath = "/storage/emulated/0/";
 

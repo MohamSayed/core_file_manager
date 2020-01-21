@@ -5,11 +5,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 // app files
-import 'package:basic_file_manager/notifiers/core.dart';
-import 'package:basic_file_manager/screens/folder_list_screen.dart';
-import 'package:basic_file_manager/notifiers/preferences.dart';
-import 'package:basic_file_manager/screens/storage_screen.dart';
-import 'package:basic_file_manager/helpers/io_extensions.dart';
+import 'package:core_file_manager/notifiers/core.dart';
+import 'package:core_file_manager/screens/folder_list_screen.dart';
+import 'package:core_file_manager/notifiers/preferences.dart';
+import 'package:core_file_manager/screens/storage_screen.dart';
+import 'package:core_file_manager/helpers/io_extensions.dart';
 
 // packages
 import 'package:provider/provider.dart';

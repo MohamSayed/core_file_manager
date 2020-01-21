@@ -2,17 +2,17 @@
 import 'dart:io';
 
 // framework
-import 'package:basic_file_manager/notifiers/core.dart';
+import 'package:core_file_manager/notifiers/core.dart';
 import 'package:flutter/material.dart';
 
 // packages
 import 'package:path_provider/path_provider.dart';
 
 // app
-import 'package:basic_file_manager/helpers/filesystem_utils.dart';
-import 'package:basic_file_manager/screens/folder_list_screen.dart';
-import 'package:basic_file_manager/ui/widgets/appbar_popup_menu.dart';
-import 'package:basic_file_manager/helpers/filesystem_utils.dart' as filesystem;
+import 'package:core_file_manager/helpers/filesystem_utils.dart';
+import 'package:core_file_manager/screens/folder_list_screen.dart';
+import 'package:core_file_manager/ui/widgets/appbar_popup_menu.dart';
+import 'package:core_file_manager/helpers/filesystem_utils.dart' as filesystem;
 import 'package:provider/provider.dart';
 
 class StorageScreen extends StatefulWidget {

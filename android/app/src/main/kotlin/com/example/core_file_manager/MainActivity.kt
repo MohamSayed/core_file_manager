@@ -1,4 +1,4 @@
-package com.example.basic_file_manager
+package com.example.core_file_manager
 
 import android.os.Build
 import android.os.Environment
@@ -13,7 +13,7 @@ import io.flutter.plugins.GeneratedPluginRegistrant
 
 
 class MainActivity: FlutterActivity() {
-    private val CHANNEL = "com.example.basic_file_manager/storage"
+    private val CHANNEL = "com.example.core_file_manager/storage"
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         GeneratedPluginRegistrant.registerWith(flutterEngine)

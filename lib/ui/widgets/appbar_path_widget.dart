@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as pathlib;
 
 // app
-import 'package:basic_file_manager/helpers/filesystem_utils.dart' as filesystem;
+import 'package:core_file_manager/helpers/filesystem_utils.dart' as filesystem;
 
 class AppBarPathWidget extends StatelessWidget {
   /// path: i.e /storage/emulated/0/...
